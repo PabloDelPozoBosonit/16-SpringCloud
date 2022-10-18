@@ -5,6 +5,8 @@ import formacionBackend.SpringCloud.trip.infrastructure.dtos.TripStatusDTO;
 import formacionBackend.SpringCloud.trip.infrastructure.dtos.TriplnputDTO;
 import formacionBackend.SpringCloud.trip.infrastructure.dtos.TripOutputDTO;
 
+import java.util.Optional;
+
 public interface TripService {
 
 

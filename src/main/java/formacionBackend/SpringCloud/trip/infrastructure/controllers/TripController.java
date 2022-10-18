@@ -3,10 +3,11 @@ package formacionBackend.SpringCloud.trip.infrastructure.controllers;
 import formacionBackend.SpringCloud.trip.application.TripService;
 import formacionBackend.SpringCloud.trip.infrastructure.dtos.TripClientOutputDTO;
 import formacionBackend.SpringCloud.trip.infrastructure.dtos.TripOutputDTO;
-import formacionBackend.SpringCloud.trip.infrastructure.dtos.TripStatusDTO;
 import formacionBackend.SpringCloud.trip.infrastructure.dtos.TriplnputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("trip")

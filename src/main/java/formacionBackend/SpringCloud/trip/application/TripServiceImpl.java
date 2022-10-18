@@ -87,7 +87,7 @@ public class TripServiceImpl  implements TripService {
         long numberOfPassenger = trip.getPassengers().stream().count();
         //Comprobamos, si tenemos 40 pasajeros, no caben mas
         if(numberOfPassenger >= 40){
-            new EntityNotFoundException("Estan todos los asientos ocupados, estate pendiente por si sale otro autobús",404);
+            throw new EntityNotFoundException("El autobús esta completo. No puedes inscribirte en este viaje :(", 404);
         }
 
         else{
@@ -104,6 +104,7 @@ public class TripServiceImpl  implements TripService {
         Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new EntityNotFoundException("Trip not found",404));
 
         long numberOfPassenger = trip.getPassengers().stream().count();
+        long availableSeats = 40 - numberOfPassenger;
         String texto = "";
 
         if(numberOfPassenger == 1)
@@ -111,7 +112,7 @@ public class TripServiceImpl  implements TripService {
         else
             texto= " pasajeros en este viaje";
 
-        return "Tenemos " + numberOfPassenger + texto;
+        return "Tenemos " + numberOfPassenger + texto + "\nDISPONEMOS DE " + availableSeats + " ASIENTOS DISPONIBLES";
     }
 
     @Override
