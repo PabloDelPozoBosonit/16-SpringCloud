@@ -4,7 +4,7 @@ import formacionBackend.SpringCloud.client.infrastructure.repository.ClientRepos
 import formacionBackend.SpringCloud.client.domain.Client;
 import formacionBackend.SpringCloud.client.infrastructure.dtos.ClientInputDTO;
 import formacionBackend.SpringCloud.client.infrastructure.dtos.ClientOutputDTO;
-import formacionBackend.SpringCloud.exceptions.EntityNotFoundException;
+import formacionBackend.SpringCloud.exceptions.MyPersonalException;
 import formacionBackend.SpringCloud.exceptions.UnprocessableEntityException;
 import formacionBackend.SpringCloud.trip.infrastructure.repository.TripRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -25,28 +25,42 @@ public class ClientServiceImpl implements ClientService{
     TripRepository tripRepository;
 
     @Override
-    public ClientOutputDTO createClient(ClientInputDTO clientInputDTO) throws Exception {
+    public ClientOutputDTO createClient(ClientInputDTO clientInputDTO) throws UnprocessableEntityException {
 
-        if((clientInputDTO.getName() == null) || (clientInputDTO.getName().equals("")))
-            throw new UnprocessableEntityException("Client field can not be null", 422);
+        if((clientInputDTO.getName() == null) || (clientInputDTO.getName().equals(""))) {
+            throw new UnprocessableEntityException("Name field can not be null", 422);
+        }
 
-        Client client = new Client();
-        client.createClient(clientInputDTO);
-        clientRepository.save(client);
+        else if (clientInputDTO.getAge() < 14) {
+            throw new UnprocessableEntityException("You must be at least 14 years old to book a trip.", 422);
+        }
 
-        return new ClientOutputDTO(client);
+        else {
+            Client client = new Client();
+            client.createClient(clientInputDTO);
+            clientRepository.save(client);
+
+            return new ClientOutputDTO(client);
+        }
+
+
     }
 
     @Override
-    public ClientOutputDTO updateClient(ClientInputDTO clientInputDTO, Integer id) throws EntityNotFoundException {
+    public ClientOutputDTO updateClient(ClientInputDTO clientInputDTO, Integer id) throws MyPersonalException {
+
+        if((clientInputDTO.getName() == null) || (clientInputDTO.getName().equals(""))) {
+            throw new UnprocessableEntityException("Name field can not be null", 422);
+        }
+
+        else if (clientInputDTO.getAge() < 14) {
+            throw new UnprocessableEntityException("You must be at least 14 years old to book a trip.", 422);
+        }
 
         Optional<Client> clientOpt = clientRepository.findById(id);
 
         if(clientOpt.isEmpty())
-            throw new EntityNotFoundException("The client does no exist", 404);
-
-        if ((clientInputDTO.getName() == null) || (clientInputDTO.getName().equals("")))
-            throw new UnprocessableEntityException("Client field can not be null", 422);
+            throw new MyPersonalException("Client not found", 404);
 
         Client client = clientOpt.get();
 
@@ -57,32 +71,45 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
-    public ClientOutputDTO getClient(Integer id) throws Exception {
+    public ClientOutputDTO getClient(Integer id) throws MyPersonalException {
 
-        Client client = clientRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Client not found",404));
+        Client client = clientRepository.findById(id).orElseThrow(() -> new MyPersonalException("Client not found",404));
 
         return new ClientOutputDTO(client);
     }
 
     @Override
-    public String deleteClient(Integer id) {
+    public String deleteClient(Integer id) throws MyPersonalException {
 
         Optional<Client> clientOpt = clientRepository.findById(id);
 
         if(clientOpt.isEmpty())
-            throw new EntityNotFoundException("The client does no exist", 404);
+            throw new MyPersonalException("Client not found", 404);
+
+        Client client = clientOpt.get();
+
 
         try {
-            clientRepository.deleteById(id);
+            clientRepository.deleteById(client.getIdClient());
+            return "El cliente ha sido eliminado correctamente";
         }
         catch (Exception e) {
-            return "El cliente NO se ha podido eliminar, intentelo de nuevo mas tarde";
+            return "El cliente NO se ha podido eliminar, intentelo de nuevo mas tarde (Posiblemente tenga un viaje de autobús pendiente)";
         }
-        return "El cliente ha sido eliminado correctamente";
+
     }
 
     @Override
-    public List<Client> findAll() {
-        return clientRepository.findAll();
+    public List<Client> findAll() throws MyPersonalException {
+
+        try {
+            return clientRepository.findAll();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+
+            throw  new MyPersonalException("No se han podido obtener todos los clientes, intentelo de nuevo", 503);
+        }
     }
+
 }

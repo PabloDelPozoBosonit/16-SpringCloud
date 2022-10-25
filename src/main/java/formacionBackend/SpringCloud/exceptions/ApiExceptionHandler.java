@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 @ResponseBody
 public class ApiExceptionHandler {
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler(MyPersonalException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public CustomError handleEntityNotFoundException(EntityNotFoundException exception) {
+    public CustomError handleEntityNotFoundException(MyPersonalException exception) {
         return new CustomError(exception.getMessage(), 404);
     }
 

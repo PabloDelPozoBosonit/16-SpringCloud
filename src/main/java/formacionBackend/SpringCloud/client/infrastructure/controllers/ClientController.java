@@ -4,6 +4,7 @@ import formacionBackend.SpringCloud.client.application.ClientService;
 import formacionBackend.SpringCloud.client.domain.Client;
 import formacionBackend.SpringCloud.client.infrastructure.dtos.ClientInputDTO;
 import formacionBackend.SpringCloud.client.infrastructure.dtos.ClientOutputDTO;
+import formacionBackend.SpringCloud.exceptions.UnprocessableEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class ClientController {
 
 
     @PostMapping
-    public ClientOutputDTO createClient(@RequestBody ClientInputDTO clientInputDTO) throws Exception{
+    public ClientOutputDTO createClient(@RequestBody ClientInputDTO clientInputDTO) throws UnprocessableEntityException{
 
         return clientService.createClient(clientInputDTO);
     }
@@ -36,12 +37,12 @@ public class ClientController {
     }
 
     @DeleteMapping("delete/{id}")
-    public String deleteClient(@PathVariable Integer id) {
+    public String deleteClient(@PathVariable Integer id) throws  Exception{
         return clientService.deleteClient(id);
     }
 
     @GetMapping("getAll")
-    public List<Client> findAll() {
+    public List<Client> findAll() throws  Exception{
         return clientService.findAll();
     }
 
